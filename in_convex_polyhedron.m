@@ -4,7 +4,7 @@ function bool = in_convex_polyhedron(convex_hull, points, b, NUMthreads)
     %points为要做判断的点（nx3)
     %本程序返回类型为布尔型
     %使用实例
-    
+
     %example
     %A=[0 0 0;0 0 1;0 1 0;0 1 1;1 0 0;1 0 1;1 1 0;1 1 1];
     %p=[1 2 3];
@@ -16,9 +16,11 @@ function bool = in_convex_polyhedron(convex_hull, points, b, NUMthreads)
     ori_edge_index = sort(unique(ori_edge_index));
 
     parfor i = 1:size(points, 1)
-        if(b(i) == 1) % means that this point is belonging to another half sphere
+
+        if (b(i) == 1) % means that this point is belonging to another half sphere
             continue
         end
+
         new_set = [convex_hull; points(i, :)];
         new_edge_index = convhull(new_set, 'Simplify', true);
         new_edge_index = sort(unique(new_edge_index));

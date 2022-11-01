@@ -1,5 +1,5 @@
 # Description
-This script 'voxelization_sphere.m' perform the voexlization of a model, and the model consists of two half spheres.
+This script 'voxelization_sphere.m' perform the voxelization of a model, and the model consists of two half spheres.
 
 If the intersection volume between the sphere and a cube, or say, voxel, exceeds 50% of the cube, then the cube belong to the sphere.
 
