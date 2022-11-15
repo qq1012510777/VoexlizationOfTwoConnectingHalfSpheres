@@ -5,7 +5,7 @@ close all
 currentPath = fileparts(mfilename('fullpath'));
 addpath(genpath([currentPath, '/include']));
 
-NumPntsInSingleVexel = 200; % number of points in a 3D voxel
+NumPntsInSingleVexel = 900; % number of points in a 3D voxel
 criterionVolume = 0.5; % the critical fraction if a voxel is belong to the object
 gridsize = 1e-4; % side length of a voxel
 NUMthreads = 10; % number of threads
@@ -310,6 +310,15 @@ cube_3 = [1:1:size(structure___cube, 1)]';
 cube_3([cube_1; cube_2; cube_1_i; cube_2_i], :) = [];
 cube_3_i = []; % for water cubes
 
+minX_water = min(points_water(:, 1));
+maxX_water = max(points_water(:, 1));
+
+minY_water = min(points_water(:, 2));
+maxY_water = max(points_water(:, 2));
+
+minZ_water = min(points_water(:, 3));
+maxZ_water = max(points_water(:, 3));
+
 for i = 1:size(cube_3, 1)
     display(['check (water) cube NO ', num2str(i), '/', num2str(size(cube_3, 1))]);
 
@@ -331,6 +340,21 @@ for i = 1:size(cube_3, 1)
     maxZ_t = Vpoints(structure___cube(cubeNO_t, 5), 3);
     RandomPnts(:, 3) = unifrnd(minZ_t, maxZ_t, [NumPntsInSingleVexel, 1]);
 
+    if ((minZ_t < minZ_water && maxZ_t <= minZ_water) || ...
+            (minZ_t >= maxZ_water && maxZ_t > maxZ_water))
+        continue
+    end
+
+    if ((minY_t < minY_water && maxY_t <= minY_water) || ...
+            (minY_t >= maxY_water && maxY_t > maxY_water))
+        continue
+    end
+
+    if ((minX_t < minX_water && maxX_t <= minX_water) || ...
+            (minX_t >= maxX_water && maxX_t > maxX_water))
+        continue
+    end
+
     if (minX_t >= maxX_t)
         error(['Incorrect voxel range:\n', num2str([minX_t miaxX_t]), '\n', num2str([minY_t miaxY_t]), '\n', num2str([minZ_t miaxZ_t]), '\n'])
     end
@@ -343,6 +367,24 @@ for i = 1:size(cube_3, 1)
 
     if (VolumeFraction1 >= criterionVolume)
         cube_3_i = [cube_3_i; cubeNO_t];
+
+        %         figure(13);
+        %         view(3);
+        %         patch('Vertices', Vpoints, 'Faces', structure___cube(cubeNO_t, [1:4]), 'FaceVertexCData', Vpoints(:, 3), 'FaceColor', 'interp', 'EdgeAlpha', 1, 'facealpha', 0.0); hold on;
+        %         patch('Vertices', Vpoints, 'Faces', structure___cube(cubeNO_t, [5:8]), 'FaceVertexCData', Vpoints(:, 3), 'FaceColor', 'interp', 'EdgeAlpha', 1, 'facealpha', 0.0); hold on;
+        %         patch('Vertices', Vpoints, 'Faces', structure___cube(cubeNO_t, [1, 2, 6, 5]), 'FaceVertexCData', Vpoints(:, 3), 'FaceColor', 'interp', 'EdgeAlpha', 1, 'facealpha', 0.0); hold on;
+        %         patch('Vertices', Vpoints, 'Faces', structure___cube(cubeNO_t, [2, 3, 7, 6]), 'FaceVertexCData', Vpoints(:, 3), 'FaceColor', 'interp', 'EdgeAlpha', 1, 'facealpha', 0.0); hold on;
+        %         patch('Vertices', Vpoints, 'Faces', structure___cube(cubeNO_t, [3, 4, 8, 7]), 'FaceVertexCData', Vpoints(:, 3), 'FaceColor', 'interp', 'EdgeAlpha', 1, 'facealpha', 0.0); hold on;
+        %         patch('Vertices', Vpoints, 'Faces', structure___cube(cubeNO_t, [4, 1, 5, 8]), 'FaceVertexCData', Vpoints(:, 3), 'FaceColor', 'interp', 'EdgeAlpha', 1, 'facealpha', 0.0); hold on;
+        %         scatter3(RandomPnts(e_1_, 1), RandomPnts(e_1_, 2), RandomPnts(e_1_, 3), 'k', 'filled'); hold on
+        %         e_2_ = find(in == 0);
+        %         scatter3(RandomPnts(e_2_, 1), RandomPnts(e_2_, 2), RandomPnts(e_2_, 3), 'r', 'filled'); hold on
+        %         pbaspect([1 1 1])
+        %         hold on
+        %         patch('Vertices', points_water, 'Faces', faces_water, 'FaceVertexCData', zeros(size(faces_water, 1), 1), ...
+        %             'FaceColor', 'flat', 'EdgeAlpha', 1, 'facealpha', 0, ...
+        %             'edgecolor', 'b'); hold on
+        %         close 13
     end
 
 end
