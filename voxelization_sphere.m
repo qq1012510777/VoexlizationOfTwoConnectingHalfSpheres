@@ -3,9 +3,11 @@ clear all
 close all
 
 currentPath = fileparts(mfilename('fullpath'));
+addpath(genpath([currentPath, '/include']));
+
 NumPntsInSingleVexel = 100;
 criterionVolume = 0.5;
-gridsize = 0.5e-4; % side length of a voxel
+gridsize = 2.5e-4; % side length of a voxel
 NUMthreads = 10; % number of threads
 
 % load the surface mesh of the model
@@ -264,7 +266,7 @@ fprintf(fid, "$ Grid data section\n");
 
 for i = 1:NUMVertices %size(Vpoints, 1)
 
-    fprintf(fid, '%-8s%-8s%-8s%8s%8s%8s\n', 'GRID', num2str(i, 5), '', ...
+    fprintf(fid, '%-8s%-8s%-8s%8s%8s%8s\n', 'GRID', num2str(i, 6), '', ...
         ... %num2str(Vpoints(i, 1), precision_string), num2str(Vpoints(i, 2), precision_string), num2str(Vpoints(i, 3), precision_string));
         Num2Str_Set8Width(Vpoints(i, 1)), Num2Str_Set8Width(Vpoints(i, 2)), Num2Str_Set8Width(Vpoints(i, 3)));
 end
