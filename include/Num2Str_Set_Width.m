@@ -1,4 +1,4 @@
-function f = Num2Str_Set8Width(n)
+function f = Num2Str_Set_Width(n, width_x)
     kl = num2str(n, '%e');
 
     kl_1 = kl(size(kl, 2) - 2:size(kl, 2));
@@ -28,7 +28,7 @@ function f = Num2Str_Set8Width(n)
 
     CharArray_exponent = [sign__exponent, num2str(abs(exponent))];
 
-    remainning_width = 8 - size(CharArray_exponent, 2);
+    remainning_width = width_x - size(CharArray_exponent, 2);
 
     if (real_part < 0)
         remainning_width = remainning_width - 2;
