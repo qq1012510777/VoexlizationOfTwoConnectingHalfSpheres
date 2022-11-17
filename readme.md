@@ -7,11 +7,11 @@ The script 'Voxelization_SandWater.m' performs the voxelization of sand and wate
 
 The (absorbed) water is held in a film on the surface of two half spheres, i.e., the connection of two sand spheres.
 
-The script 'Voxelization_SandWater.m' allows offset voxelization along z axis!
+The script 'Voxelization_SandWater.m' allows offset voxelization along x, y and/or z axis!
 
 # Author
-Tingchang Yin, Westlake University, China
+* Tingchang Yin, Westlake University, China
 
-https://qq1012510777.github.io/
+* [Website](https://qq1012510777.github.io/)
 
-yintingchang@foxmail.com
+* yintingchang@foxmail.com

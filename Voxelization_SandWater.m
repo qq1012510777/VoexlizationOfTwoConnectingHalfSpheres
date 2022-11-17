@@ -7,11 +7,15 @@ addpath(genpath([currentPath, '/include']));
 
 NumPntsInSingleVexel = 200; % number of points in a 3D voxel
 criterionVolume = 0.5; % the critical fraction if a voxel is belong to the object
-gridsize = 1e-4; % side length of a voxel
+gridsize = 0.5e-4; % side length of a voxel
 % NUMthreads = 10; % number of threads
-offset_vertical_fraction = 0.3; % offset value (in form of percentage), for example 0.5 = 50 % of gridsize
+offset_vertical_fraction_z = 0.3; % offset value (in form of percentage), for example 0.5 = 50 % of gridsize
+offset_vertical_fraction_y = 0.4; % offset value (in form of percentage), for example 0.5 = 50 % of gridsize
+offset_vertical_fraction_x = 0.5; % offset value (in form of percentage), for example 0.5 = 50 % of gridsize
 
-if (offset_vertical_fraction < 0 || offset_vertical_fraction >= 1)
+if ((offset_vertical_fraction_z < 0 || offset_vertical_fraction_z >= 1) || ...
+        (offset_vertical_fraction_y < 0 || offset_vertical_fraction_y >= 1) || ...
+        (offset_vertical_fraction_x < 0 || offset_vertical_fraction_x >= 1))
     error('Wrong offset value!');
 end
 
@@ -31,12 +35,20 @@ view(3)
 patch('Vertices', points_sand, 'Faces', faces_sand, 'FaceVertexCData', zeros(size(faces_sand, 1), 1), ...
     'FaceColor', 'flat', 'EdgeAlpha', 1, 'facealpha', 0, ...
     'edgecolor', 'r'); hold on
+pbaspect([1, 1, 1]); hold on
+xlabel('x')
+ylabel('y')
+zlabel('z'); hold on
 
 figure(2)
 view(3)
 patch('Vertices', points_water, 'Faces', faces_water, 'FaceVertexCData', zeros(size(faces_water, 1), 1), ...
     'FaceColor', 'flat', 'EdgeAlpha', 1, 'facealpha', 0, ...
     'edgecolor', 'b'); hold on
+pbaspect([1, 1, 1]); hold on
+xlabel('x')
+ylabel('y')
+zlabel('z'); hold on
 
 % let's address the sand first
 % let's address the sand first
@@ -56,35 +68,30 @@ end
 % mesh
 
 X = []; Y = []; Z = [];
+Ax = []; Ay = []; Az = [];
 
-if (offset_vertical_fraction ~= 0)
-    [X1, Y1, Z1] = meshgrid([minX:gridsize:maxX], [minY:gridsize:maxY], [minZ:minZ]);
-    [X2, Y2, Z2] = meshgrid([minX:gridsize:maxX], [minY:gridsize:maxY], ...
-        [(minZ + (1 - offset_vertical_fraction) * gridsize):gridsize:(maxZ - offset_vertical_fraction * gridsize)]);
-    [X3, Y3, Z3] = meshgrid([minX:gridsize:maxX], ...
-        [minY:gridsize:maxY], ...
-        [maxZ:maxZ]);
-
-    X = zeros(size(X1, 1), size(X1, 2), size(X1, 3) + size(X2, 3) + size(X3, 3));
-    Y = X;
-    Z = X;
-
-    X(:, :, 1) = X1;
-    X(:, :, size(X1, 3) + size(X2, 3) + size(X3, 3)) = X3;
-    X(:, :, [2:size(X1, 3) + size(X2, 3) + size(X3, 3) - 1]) = X2;
-
-    Y(:, :, 1) = Y1;
-    Y(:, :, size(X1, 3) + size(X2, 3) + size(X3, 3)) = Y3;
-    Y(:, :, [2:size(X1, 3) + size(X2, 3) + size(X3, 3) - 1]) = Y2;
-
-    Z(:, :, 1) = Z1;
-    Z(:, :, size(X1, 3) + size(X2, 3) + size(X3, 3)) = Z3;
-    Z(:, :, [2:size(X1, 3) + size(X2, 3) + size(X3, 3) - 1]) = Z2;
-
-    clear X1 X2 X3 Y1 Y2 Y3 Z1 Z2 Z3
+if (offset_vertical_fraction_x ~= 0)
+    Ax = [minX, (minX + (1 - offset_vertical_fraction_x) * gridsize):gridsize:(maxX - offset_vertical_fraction_x * gridsize), ...
+            maxX];
 else
-    [X, Y, Z] = meshgrid([minX:gridsize:maxX], [minY:gridsize:maxY], [minZ:gridsize:maxZ]);
+    Ax = [minX:gridsize:maxX];
 end
+
+if (offset_vertical_fraction_y ~= 0)
+    Ay = [minY, (minY + (1 - offset_vertical_fraction_y) * gridsize):gridsize:(maxY - offset_vertical_fraction_y * gridsize), ...
+            maxX];
+else
+    Ay = [minY:gridsize:maxY];
+end
+
+if (offset_vertical_fraction_z ~= 0)
+    Az = [minZ, (minZ + (1 - offset_vertical_fraction_z) * gridsize):gridsize:(maxZ - offset_vertical_fraction_z * gridsize), ...
+            maxZ];
+else
+    Az = [minZ:gridsize:maxZ];
+end
+
+[X, Y, Z] = meshgrid(Ax, Ay, Az);
 
 NUMVertices = size(X(:), 1);
 
@@ -101,7 +108,10 @@ patch('Vertices', Vpoints, 'Faces', structure___cube(:, [1, 2, 6, 5]), 'FaceVert
 patch('Vertices', Vpoints, 'Faces', structure___cube(:, [2, 3, 7, 6]), 'FaceVertexCData', Vpoints(:, 3), 'FaceColor', 'interp', 'EdgeAlpha', 1, 'facealpha', 0.0); hold on;
 patch('Vertices', Vpoints, 'Faces', structure___cube(:, [3, 4, 8, 7]), 'FaceVertexCData', Vpoints(:, 3), 'FaceColor', 'interp', 'EdgeAlpha', 1, 'facealpha', 0.0); hold on;
 patch('Vertices', Vpoints, 'Faces', structure___cube(:, [4, 1, 5, 8]), 'FaceVertexCData', Vpoints(:, 3), 'FaceColor', 'interp', 'EdgeAlpha', 1, 'facealpha', 0.0); hold on;
-
+pbaspect([1, 1, 1]); hold on
+xlabel('x')
+ylabel('y')
+zlabel('z'); hold on
 % identify the upper and lower half spheres
 % identify the upper and lower half spheres
 % identify the upper and lower half spheres
@@ -149,10 +159,18 @@ figure(4)
 title('Points which are inside the upper, half sphere (sand)', 'interpreter', 'latex')
 patch('Vertices', points_sand, 'Faces', faces_sand(Face1_1_, :), 'FaceVertexCData', points_sand(:, 3), 'FaceColor', 'interp', 'EdgeAlpha', 0.1, 'facealpha', 0); view(3); colorbar; hold on;
 scatter3(Vpoints(s_1_, 1), Vpoints(s_1_, 2), Vpoints(s_1_, 3), '.'); hold on
+pbaspect([1, 1, 1]); hold on
+xlabel('x')
+ylabel('y')
+zlabel('z'); hold on
 figure(5)
 title('Points which are inside the lower, half sphere (sand)', 'interpreter', 'latex')
 patch('Vertices', points_sand, 'Faces', faces_sand(Face1_2_, :), 'FaceVertexCData', points_sand(:, 3), 'FaceColor', 'interp', 'EdgeAlpha', 0.1, 'facealpha', 0); view(3); colorbar; hold on;
 scatter3(Vpoints(s_2_, 1), Vpoints(s_2_, 2), Vpoints(s_2_, 3), '.'); hold on
+pbaspect([1, 1, 1]); hold on
+xlabel('x')
+ylabel('y')
+zlabel('z'); hold on
 
 % now let check if one voxel is inside the spheres
 % now let check if one voxel is inside the spheres
@@ -214,6 +232,10 @@ for i = 1:size(structure___cube, 1)
     %     patch('Vertices', Vpoints, 'Faces', structure___cube(i, [3, 4, 8, 7]), 'FaceVertexCData', Vpoints(:, 3), 'FaceColor', 'interp', 'EdgeAlpha', 1, 'facealpha', 0.0); hold on;
     %     patch('Vertices', Vpoints, 'Faces', structure___cube(i, [4, 1, 5, 8]), 'FaceVertexCData', Vpoints(:, 3), 'FaceColor', 'interp', 'EdgeAlpha', 1, 'facealpha', 0.0); hold on;
     %     scatter3(RandomPnts(:, 1), RandomPnts(:, 2), RandomPnts(:, 3), 'k', 'filled'); hold on
+    %     pbaspect([1, 1, 1]); hold on
+    %     xlabel('x')
+    %     ylabel('y')
+    %     zlabel('z'); hold on
 
     %k_1_ = in_convex_polyhedron(convex_hull_1, RandomPnts, zeros(NumPntsInSingleVexel, 1), NUMthreads);
     k_1_ = intriangulation(points_sand, faces_sand(Face1_1_, :), RandomPnts);
@@ -248,6 +270,7 @@ view(3);
 xlabel('x')
 ylabel('y')
 zlabel('z'); hold on
+pbaspect([1, 1, 1]); hold on
 title('cubes which are completely inside the upper and lower, half sphere (sand)', 'interpreter', 'latex')
 patch('Vertices', Vpoints, 'Faces', structure___cube(cube_1, [1:4]), 'FaceVertexCData', Vpoints(:, 3), 'FaceColor', 'interp', 'EdgeAlpha', 1, 'facealpha', 0.0, 'edgecolor', 'r'); hold on;
 patch('Vertices', Vpoints, 'Faces', structure___cube(cube_1, [5:8]), 'FaceVertexCData', Vpoints(:, 3), 'FaceColor', 'interp', 'EdgeAlpha', 1, 'facealpha', 0.0, 'edgecolor', 'r'); hold on;
@@ -268,6 +291,7 @@ view(3);
 xlabel('x')
 ylabel('y')
 zlabel('z'); hold on
+pbaspect([1, 1, 1]); hold on
 title('cubes which are partialy inside the upper, half sphere (sand)', 'interpreter', 'latex')
 patch('Vertices', Vpoints, 'Faces', structure___cube(cube_1_i, [1:4]), 'FaceVertexCData', Vpoints(:, 3), 'FaceColor', 'interp', 'EdgeAlpha', 1, 'facealpha', 0.0, 'edgecolor', 'r'); hold on;
 patch('Vertices', Vpoints, 'Faces', structure___cube(cube_1_i, [5:8]), 'FaceVertexCData', Vpoints(:, 3), 'FaceColor', 'interp', 'EdgeAlpha', 1, 'facealpha', 0.0, 'edgecolor', 'r'); hold on;
@@ -281,6 +305,7 @@ view(3);
 xlabel('x')
 ylabel('y')
 zlabel('z'); hold on
+pbaspect([1, 1, 1]); hold on
 title('cubes which are partialy inside the lower, half sphere (sand)', 'interpreter', 'latex')
 patch('Vertices', Vpoints, 'Faces', structure___cube(cube_2_i, [1:4]), 'FaceVertexCData', Vpoints(:, 3), 'FaceColor', 'interp', 'EdgeAlpha', 1, 'facealpha', 0.0, 'edgecolor', 'b'); hold on;
 patch('Vertices', Vpoints, 'Faces', structure___cube(cube_2_i, [5:8]), 'FaceVertexCData', Vpoints(:, 3), 'FaceColor', 'interp', 'EdgeAlpha', 1, 'facealpha', 0.0, 'edgecolor', 'b'); hold on;
@@ -294,6 +319,7 @@ view(3);
 xlabel('x')
 ylabel('y')
 zlabel('z'); hold on
+pbaspect([1, 1, 1]); hold on
 title('The voxelization of the input model (sand)', 'interpreter', 'latex')
 patch('Vertices', Vpoints, 'Faces', structure___cube([cube_1; cube_2; cube_1_i; cube_2_i], [1:4]), 'FaceVertexCData', Vpoints(:, 3), 'FaceColor', 'interp', 'EdgeAlpha', 1, 'facealpha', 1.0); hold on;
 patch('Vertices', Vpoints, 'Faces', structure___cube([cube_1; cube_2; cube_1_i; cube_2_i], [5:8]), 'FaceVertexCData', Vpoints(:, 3), 'FaceColor', 'interp', 'EdgeAlpha', 1, 'facealpha', 1.0); hold on;
@@ -394,6 +420,7 @@ view(3);
 xlabel('x')
 ylabel('y')
 zlabel('z'); hold on
+pbaspect([1, 1, 1]); hold on
 title('The voxelization of water (water)', 'interpreter', 'latex')
 patch('Vertices', Vpoints, 'Faces', structure___cube([cube_3_i], [1:4]), 'FaceVertexCData', Vpoints(:, 3), 'FaceColor', 'interp', 'EdgeAlpha', 1, 'facealpha', 1.0); hold on;
 patch('Vertices', Vpoints, 'Faces', structure___cube([cube_3_i], [5:8]), 'FaceVertexCData', Vpoints(:, 3), 'FaceColor', 'interp', 'EdgeAlpha', 1, 'facealpha', 1.0); hold on;
@@ -412,6 +439,7 @@ view(3);
 xlabel('x')
 ylabel('y')
 zlabel('z'); hold on
+pbaspect([1, 1, 1]); hold on
 title('The voxelization of sand and water', 'interpreter', 'latex')
 patch('Vertices', Vpoints, 'Faces', structure___cube([cube_1; cube_2; cube_1_i; cube_2_i], [1:4]), 'FaceVertexCData', Vpoints(:, 3), 'FaceColor', 'interp', 'EdgeAlpha', 1, 'facealpha', 1.0); hold on;
 patch('Vertices', Vpoints, 'Faces', structure___cube([cube_1; cube_2; cube_1_i; cube_2_i], [5:8]), 'FaceVertexCData', Vpoints(:, 3), 'FaceColor', 'interp', 'EdgeAlpha', 1, 'facealpha', 1.0); hold on;
