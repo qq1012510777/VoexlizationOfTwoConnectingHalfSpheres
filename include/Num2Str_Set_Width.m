@@ -1,9 +1,18 @@
 function f = Num2Str_Set_Width(n, width_x)
     lastwidth = -1;
-    if(width_x ~= 16)
-        error('I did not consider other width value');
+    
+    if(width_x < 7)
+       error('width value should >= 7');
     end
-    for i = 10:60
+    
+    inti_ = width_x - 6;
+    
+    if(inti_ <= 0)
+        inti_ = 1;
+    end
+    
+    
+    for i = inti_:60
         charNUM = num2str(n, ['%1.', num2str(i), 'e']);
 
         if (contains(charNUM, 'e+0'))

@@ -7,7 +7,7 @@ addpath(genpath([currentPath, '/include']));
 
 NumPntsInSingleVexel = 200; % number of points in a 3D voxel
 criterionVolume = 0.5; % the critical fraction if a voxel is belong to the object
-gridsize = 0.5e-4; % side length of a voxel
+gridsize = 1e-4; % side length of a voxel
 % NUMthreads = 10; % number of threads
 offset_vertical_fraction_z = 0.3; % offset value (in form of percentage), for example 0.5 = 50 % of gridsize
 offset_vertical_fraction_y = 0.4; % offset value (in form of percentage), for example 0.5 = 50 % of gridsize
@@ -470,7 +470,7 @@ fprintf(fid, [date, '\n']);
 fprintf(fid, "BEGIN BULK\n");
 fprintf(fid, "$ Grid data section\n");
 
-Data_num_significant = 16;
+Data_num_significant = 8;
 
 for i = 1:NUMVertices %size(Vpoints, 1)
     disp(['write points: ', num2str(i), '/', num2str(NUMVertices)]);
