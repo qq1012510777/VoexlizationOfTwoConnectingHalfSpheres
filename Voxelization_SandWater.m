@@ -461,6 +461,30 @@ patch('Vertices', Vpoints, 'Faces', structure___cube([cube_3_i], [2, 3, 7, 6]), 
 patch('Vertices', Vpoints, 'Faces', structure___cube([cube_3_i], [3, 4, 8, 7]), 'FaceVertexCData', Vpoints(:, 3), 'FaceColor', 'r', 'EdgeAlpha', 1, 'facealpha', facecolor_alpha); hold on;
 patch('Vertices', Vpoints, 'Faces', structure___cube([cube_3_i], [4, 1, 5, 8]), 'FaceVertexCData', Vpoints(:, 3), 'FaceColor', 'r', 'EdgeAlpha', 1, 'facealpha', facecolor_alpha); hold on;
 
+% output mat
+sg = datestr(datetime);
+asf = find(sg == ' ');
+sg(asf) = '_';
+asf = find(sg == '-');
+sg(asf) = '_';
+asf = find(sg == ':');
+sg(asf) = '_';
+
+save([currentPath, '/Voxelization_SandWater_', sg, '_tt.mat'])
+
+Data_num_significant = 11;
+
+sandcubeNO = [cube_1; cube_2; cube_1_i; cube_2_i];
+
+if (If_use_Large_field_data == 0 && (NUMVertices >= 1e9 || (size(sandcubeNO, 1) + size(cube_3_i, 1)) >= 1e9))
+    disp('The number of vertices or the number of cubes is too large, which is larger than 1e9; Small field data format is inappropriate');
+    disp('I will use the large field format of nastran');
+    disp(['The width of the large field format that you set is ', num2str(Data_num_significant)]);
+    disp('Please press ENTER key to continue ......')
+    pause
+    If_use_Large_field_data = 1;
+end
+
 % write nas file
 % write nas file
 % write nas file
@@ -473,10 +497,6 @@ fprintf(fid, "$ ");
 fprintf(fid, [date, '\n']);
 fprintf(fid, "BEGIN BULK\n");
 fprintf(fid, "$ Grid data section\n");
-
-Data_num_significant = 8;
-
-sandcubeNO = [cube_1; cube_2; cube_1_i; cube_2_i];
 
 if (If_use_Large_field_data > 0)
 
@@ -491,10 +511,6 @@ if (If_use_Large_field_data > 0)
     end
 
 elseif (If_use_Large_field_data == 0)
-
-    if (NUMVertices > 1e9 || (size(sandcubeNO, 1) + size(cube_3_i, 1)) > 1e9)
-        error('The number of vertices or the number of cubes is too large, which is larger than 1e9; Small field data format is inappropriate')
-    end
 
     for i = 1:NUMVertices
         disp(['write points (small field): ', num2str(i), '/', num2str(NUMVertices)]);
@@ -604,13 +620,3 @@ end
 
 fprintf(fid, "ENDDATA\n");
 fclose(fid);
-
-sg = datestr(datetime);
-asf = find(sg == ' ');
-sg(asf) = '_';
-asf = find(sg == '-');
-sg(asf) = '_';
-asf = find(sg == ':');
-sg(asf) = '_';
-
-save([currentPath, '/Voxelization_SandWater_', sg, '_tt.mat'])
